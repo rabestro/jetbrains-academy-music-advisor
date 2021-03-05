@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 /*
@@ -17,6 +18,9 @@ public class Authorization implements Runnable {
     private static final Logger log = Logger.getLogger(Authorization.class.getName());
 
     private static final String SPOTIFY_URL = "https://accounts.spotify.com/authorize";
+    private static final String CLIENT_ID = "81bcb1ba1c224b74b5f2bed6bb185cad";
+    private static final String REDIRECT_URI = "http%3A%2F%2Flocalhost:8080";
+    private static final String URI_TEMPLATE = "{0}?client_id={1}&redirect_uri={2}&response_type=code";
 
     @Override
     public void run() {
@@ -44,13 +48,13 @@ public class Authorization implements Runnable {
                     .build();
 
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
+            log.fine(response::body);
+            final var uri = URI.create(MessageFormat.format(URI_TEMPLATE, SPOTIFY_URL, CLIENT_ID, REDIRECT_URI));
+            log.config(uri::toString);
 
-            request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://accounts.spotify.com/authorize?client_id=81bcb1ba1c224b74b5f2bed6bb185cad&redirect_uri=http%3A%2F%2Flocalhost:8080&response_type=code"))
-                    .GET().build();
+            request = HttpRequest.newBuilder().uri(uri).GET().build();
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
+            log.fine(response::body);
 
 /*            request = HttpRequest.newBuilder()
                     .header("Content-Type", "application/x-www-form-urlencoded")
