@@ -1,14 +1,19 @@
 package advisor;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Application implements Runnable {
+    private static final Logger log = Logger.getLogger(Application.class.getName());
+
     private static final Scanner scanner = new Scanner(System.in);
 
     private boolean auth = false;
 
     @Override
     public void run() {
+        log.entering(Application.class.getName(), "run");
+
         application:
         for (; ; ) {
             final var command = scanner.nextLine();
@@ -53,6 +58,7 @@ public class Application implements Runnable {
                     break application;
             }
         }
+        log.exiting(Application.class.getName(), "run");
     }
 
     private void print(String message) {
